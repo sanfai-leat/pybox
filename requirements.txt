@@ -1,0 +1,8 @@
+numpy
+pandas
+python-dateutil
+python-mpv
+pytz
+six
+tzdata
+yt-dlp
