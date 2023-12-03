@@ -5,6 +5,7 @@ import threading
 import time
 
 import mpv
+import yt_dlp
 from pandas import read_csv
 
 logging.basicConfig(
@@ -17,7 +18,7 @@ logging.basicConfig(
 
 def df():
     df = read_csv(
-        "playlists/openai.csv",
+        "playlists/playlist.csv",
         header=None,
         sep=":::",
         names=["name", "title", "url"],
@@ -45,6 +46,16 @@ def fade_out(mp, max, step, delay):
         for vol in range(max, -step, -step):
             mp._set_property("volume", vol)
             time.sleep(fade / (max / step))
+
+
+def video_available(video_id):
+    try:
+        ydl = yt_dlp.YoutubeDL({"quiet": True})
+        ydl.extract_info(video_id, download=False)
+        return True
+    except yt_dlp.DownloadError as e:
+        logging.error(f"Video not available: {e}")
+        return False
 
 
 if os.path.isfile("id.lock"):
@@ -82,6 +93,13 @@ while True:
         url = playlist.url[id]
         name = playlist.name[id]
         title = playlist.title[id]
+        while not video_available(url):
+            logging.info(f"Skipping  {id}:::{name}::{title}")
+            id += 1
+            lock_id(id)
+            url = playlist.url[id]
+            name = playlist.name[id]
+            title = playlist.title[id]
     except KeyError:
         logging.warning("Playlist finished!")
         print("Playlist finished!")
