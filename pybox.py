@@ -106,11 +106,12 @@ while True:
         sys.exit(0)
     try:
         adv._set_property("volume", 100)
-        if os.path.isfile(f"adv/{name.lower()}.mp3"):
-            adv.play(f"adv/{name.lower()}.mp3")
-            time.sleep(2)
-        else:
-            adv.play("adv/youre.mp3")
+        if id % 5 == 0:
+            if os.path.isfile(f"adv/{name.lower()}.mp3"):
+                adv.play(f"adv/{name.lower()}.mp3")
+                time.sleep(2)
+            else:
+                adv.play("adv/youre.mp3")
         player.play(url)
         logging.info(f"Now playing {id+1}/{id_max}:::{name}:::{title}")
         logging.info(
