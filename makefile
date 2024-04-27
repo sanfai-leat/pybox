@@ -10,9 +10,6 @@ play: .venv
 log:
 	tail -f pybox.log
 
-tmp:
-	watch cat pybox.tmp
-
 kill:
 	pkill python
 	pkill bash

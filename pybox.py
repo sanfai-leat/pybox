@@ -107,10 +107,12 @@ try:
     fade_in(player, 10, 100, 5, 8.0)
     # wait end
     while True:
-        playtime = int(player._get_property("playtime-remaining"))
-        if playtime >= 35:
+        playtime = player._get_property("playtime-remaining")
+        if playtime <= 35 and playtime > 30:
             with open("pybox.tmp", "w") as fs:
-                fs.write(str(playtime))
+                fs.write("")
+            while player._get_property("playtime-remaining") > 30:
+                time.sleep(1)
         if playtime <= 30:
             break
         time.sleep(1)

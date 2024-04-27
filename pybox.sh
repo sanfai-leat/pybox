@@ -1,31 +1,40 @@
 #!/usr/bin/env bash
 
-# Hide ^C
 stty -echoctl
 
-# Function called by trap
-skill() {
-   tput setaf 1
-   printf "pybox: SIGINT caught ..."
-   tput sgr0
-   sleep 1
-   pkill python
-   exit 0
+adv() {
+   read -r -p "pybox: name? " name
+   if [ -f "adv/${name}.mp3" ]; then
+      mpv "adv/${name,,}.mp3"
+   else
+      mpv "adv/radio.mp3"
+   fi
 }
 
-# Trap SIGINT (Ctrl + C)
-trap 'skill' SIGINT
+action() {
+   tput setaf 1
+   echo "pybox: SIGINT caught ..."
+   tput sgr0
+   read -r -p "pybox: kill? [y/a/N] " yn
+   case $yn in
+   [Yy]*)
+      sleep 1
+      pkill python
+      exit 0
+      ;;
+   [Aa]*) adv ;;
+   *) echo "" ;;
+   esac
+}
+
+trap 'action' SIGINT
 
 tmp="./pybox.tmp"
 while true; do
    rm -f "$tmp"
-   .venv/bin/python pybox.py &
+   alacritty --working-directory "$PWD" -e bash -c ".venv/bin/python pybox.py" &
    # check tmp exists
    while [ ! -f "$tmp" ]; do
-      sleep 0.5
-   done
-   # check playtime
-   while [ "$(cat $tmp)" -gt 35 ]; do
       sleep 1
    done
    # safe wait
