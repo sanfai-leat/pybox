@@ -49,9 +49,10 @@ def fade_in(mp, off, max, step, fade):
 
 
 def fade_out(mp, max, step, fade):
-    for vol in range(max, -step, -step):
+    for vol in range(max, 10, -step):
         mp._set_property("volume", vol)
         time.sleep(fade / (max / step))
+    time.sleep(5)
 
 
 if os.path.isfile("pybox.lock"):
