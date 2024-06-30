@@ -1,7 +1,7 @@
 # pybox
 
 play: .venv
-	.venv/bin/python pybox.py
+	./pybox.sh
 
 .venv:
 	python3 -m venv .venv
@@ -12,16 +12,15 @@ log:
 
 kill:
 	pkill python
+	pkill bash
 
 clear:
 	echo > pybox.log
 
-sync:
-	rsync -azvCPL --exclude .venv . rpifour:pybox
-
 clean:
 	rm -fr pybox.log
-	rm -fr id.lock
+	rm -fr pybox.lock
+	rm -fr pybox.tmp
 
 distclean: clean
 	rm -fr .venv
