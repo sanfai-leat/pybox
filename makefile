@@ -5,7 +5,7 @@ play: .venv
 
 .venv:
 	python3 -m venv .venv
-	.venv/bin/pip install --upgrade -r requirements.txt
+	.venv/bin/pip install --upgrade -r requirements/requirements.in -c requirements/requirements.txt
 
 log:
 	tail -f pybox.log
