@@ -1,7 +1,6 @@
 import requests
 import logging
 import os
-import requests
 import sys
 import time
 
@@ -44,21 +43,21 @@ def video_available(video_id):
             try:
                 response = requests.head(opus_url)
                 if response.status_code == 200:
-                    return True
+                    return opus_url
                 else:
                     logging.error(
                         f"Best audio not available, url returned: {response.status_code}"
                     )
-                    return False
+                    return None
             except requests.exceptions.RequestException as e:
                 logging.error(f"Url request error: {e}")
-                return False
+                return None
         except KeyError as e:
             logging.error(f"Key error in format check: {e}")
-            return False
+            return None
     except yt_dlp.DownloadError as e:
         logging.error(f"Video not available: {e}")
-        return False
+        return None
 
 
 def fade_in(mp, off, max, step, fade):
@@ -83,8 +82,7 @@ else:
     lock_id(id)
 
 player = mpv.MPV(
-    ytdl=True,
-    ytdl_format="bestaudio",
+    ytdl=False,
     player_operation_mode="pseudo-gui",
     script_opts="osc-layout=box,osc-seekbarstyle=bar,osc-deadzonesize=0,osc-minmousemove=3",
     input_default_bindings=True,
@@ -103,20 +101,22 @@ try:
     name = playlist.name[id]
     title = playlist.title[id]
     if not os.environ.get("OFFLINE", 0):
-        while not video_available(url):
+        opus_url = video_available(url)
+        while not opus_url:
             logging.info(f"Skipping  {id}:::{name}::{title}")
             id += 1
             lock_id(id)
             url = playlist.url[id]
             name = playlist.name[id]
             title = playlist.title[id]
+            opus_url = video_available(url)
 except KeyError:
     logging.warning("Playlist finished!")
     print("Playlist finished!")
     sys.exit(0)
 try:
     # load track
-    player.play(url)
+    player.play(opus_url)
     player.wait_until_playing()
     logging.info(f"Now playing {id+1}/{id_max}:::{name}:::{title}")
     # prepare next
