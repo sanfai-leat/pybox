@@ -105,16 +105,16 @@ try:
         f"Next one    {'='*(len(str(id)+str(id_max))+3)}>{playlist.name[id]}:::{playlist.title[id]}"
     )
     # fade-in
-    fade_in(player, 10, 100, 5, 8.0)
+    fade_in(player, 5, 100, 5, 10.0)
     # wait end
     while True:
         playtime = player._get_property("playtime-remaining")
-        if playtime <= 35 and playtime > 30:
+        if playtime <= 75 and playtime > 70:
             with open("pybox.tmp", "w") as fs:
                 fs.write("")
-            while player._get_property("playtime-remaining") > 30:
+            while player._get_property("playtime-remaining") > 70:
                 time.sleep(1)
-        if playtime <= 30:
+        if playtime <= 70:
             break
         time.sleep(1)
     # fade-out
