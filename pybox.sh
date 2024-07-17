@@ -15,7 +15,7 @@ action() {
    tput setaf 1
    echo "pybox: SIGINT caught ..."
    tput sgr0
-   read -r -p "pybox: kill? [y/a/N] " yn
+   read -r -p "pybox: kill? [y/a/s/N] " yn
    case $yn in
    [Yy]*)
       sleep 1
@@ -23,6 +23,7 @@ action() {
       exit 0
       ;;
    [Aa]*) adv ;;
+   [Ss]*) echo >"$tmp" ;;
    *) echo "" ;;
    esac
 }

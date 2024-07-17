@@ -110,14 +110,17 @@ try:
         # wait end
         while True:
             playtime = player._get_property("playtime-remaining")
-            if playtime <= 75 and playtime > 70:
-                with open("pybox.tmp", "w") as fs:
-                    fs.write("")
-                while player._get_property("playtime-remaining") > 70:
-                    time.sleep(1)
-            if playtime <= 70:
-                break
-            time.sleep(1)
+            if (playtime <= 75 and playtime > 70) or os.path.isfile("pybox.tmp"):
+                if os.path.isfile("pybox.tmp"):
+                    time.sleep(5)
+                    break
+                else:
+                    with open("pybox.tmp", "w") as fs:
+                        fs.write("")
+                    while player._get_property("playtime-remaining") > 70:
+                        time.sleep(1)
+                    break
+            time.sleep(0.3)
         # fade-out
         fade_out(player, 100, 5, 12.0)
     else:
