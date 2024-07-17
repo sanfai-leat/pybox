@@ -101,24 +101,33 @@ try:
     # prepare next
     id += 1
     lock_id(id)
-    logging.info(
-        f"Next one    {'='*(len(str(id)+str(id_max))+3)}>{playlist.name[id]}:::{playlist.title[id]}"
-    )
-    # fade-in
-    fade_in(player, 5, 100, 5, 10.0)
-    # wait end
-    while True:
+    if id in playlist.name.keys():
+        logging.info(
+            f"Next one    {'='*(len(str(id)+str(id_max))+3)}>{playlist.name[id]}:::{playlist.title[id]}"
+        )
+        # fade-in
+        fade_in(player, 5, 100, 5, 10.0)
+        # wait end
+        while True:
+            playtime = player._get_property("playtime-remaining")
+            if playtime <= 75 and playtime > 70:
+                with open("pybox.tmp", "w") as fs:
+                    fs.write("")
+                while player._get_property("playtime-remaining") > 70:
+                    time.sleep(1)
+            if playtime <= 70:
+                break
+            time.sleep(1)
+        # fade-out
+        fade_out(player, 100, 5, 12.0)
+    else:
+        logging.warning("Last track in playlist!")
+        print("Last track in playlist!")
+        # fade-in
+        fade_in(player, 5, 100, 5, 10.0)
+        # wait end
         playtime = player._get_property("playtime-remaining")
-        if playtime <= 75 and playtime > 70:
-            with open("pybox.tmp", "w") as fs:
-                fs.write("")
-            while player._get_property("playtime-remaining") > 70:
-                time.sleep(1)
-        if playtime <= 70:
-            break
-        time.sleep(1)
-    # fade-out
-    fade_out(player, 100, 5, 12.0)
+        time.sleep(playtime)
     # shut-down
     player.stop()
     player.quit(code=0)
