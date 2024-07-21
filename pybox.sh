@@ -5,9 +5,9 @@ stty -echoctl
 adv() {
    read -r -p "pybox: name? " name
    if [ -f "adv/${name}.mp3" ]; then
-      mpv "adv/${name,,}.mp3"
+      mpv --volume=170 "adv/${name,,}.mp3"
    else
-      mpv "adv/radio.mp3"
+      mpv --volume=170 "adv/radio.mp3"
    fi
 }
 
