@@ -82,13 +82,14 @@ try:
     url = playlist.url[id]
     name = playlist.name[id]
     title = playlist.title[id]
-    while not video_available(url):
-        logging.info(f"Skipping  {id}:::{name}::{title}")
-        id += 1
-        lock_id(id)
-        url = playlist.url[id]
-        name = playlist.name[id]
-        title = playlist.title[id]
+    if not os.environ.get("OFFLINE", 0):
+        while not video_available(url):
+            logging.info(f"Skipping  {id}:::{name}::{title}")
+            id += 1
+            lock_id(id)
+            url = playlist.url[id]
+            name = playlist.name[id]
+            title = playlist.title[id]
 except KeyError:
     logging.warning("Playlist finished!")
     print("Playlist finished!")
@@ -110,15 +111,17 @@ try:
         # wait end
         while True:
             playtime = player._get_property("playtime-remaining")
-            if (playtime <= 75 and playtime > 70) or os.path.isfile("pybox.tmp"):
+            if (playtime <= 45 and playtime > 40) or os.path.isfile("pybox.tmp"):
                 if os.path.isfile("pybox.tmp"):
-                    time.sleep(5)
+                    if not os.environ.get("OFFLINE", 0):
+                        time.sleep(7)
                     break
                 else:
                     with open("pybox.tmp", "w") as fs:
                         fs.write("")
-                    while player._get_property("playtime-remaining") > 70:
-                        time.sleep(1)
+                    if not os.environ.get("OFFLINE", 0):
+                        while player._get_property("playtime-remaining") > 38:
+                            time.sleep(1)
                     break
             time.sleep(0.3)
         # fade-out
