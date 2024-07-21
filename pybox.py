@@ -1,3 +1,4 @@
+import requests
 import logging
 import os
 import sys
@@ -34,8 +35,26 @@ def lock_id(id):
 def video_available(video_id):
     try:
         ydl = yt_dlp.YoutubeDL({"quiet": True})
-        ydl.extract_info(video_id, download=False)
-        return True
+        info = ydl.extract_info(video_id, download=False)
+        try:
+            fmt = [el["format_id"] for el in info["formats"]]
+            opus_id = fmt.index("251")
+            opus_url = info["formats"][opus_id]["url"]
+            try:
+                response = requests.head(opus_url)
+                if response.status_code == 200:
+                    return True
+                else:
+                    logging.error(
+                        f"Best audio not available, url returned: {response.status_code}"
+                    )
+                    return False
+            except requests.exceptions.RequestException as e:
+                logging.error(f"Url request error: {e}")
+                return False
+        except KeyError as e:
+            logging.error(f"Key error in format check: {e}")
+            return False
     except yt_dlp.DownloadError as e:
         logging.error(f"Video not available: {e}")
         return False
